@@ -1,0 +1,15 @@
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+
+# Ignore log files
+*.log
+
+# Ignore environment configuration files
+.env
+
+# Ignore the 'node_modules' folder for a Node.js project
+node_modules/
+
+# Ignore MacOS system files
+.DS_Store
