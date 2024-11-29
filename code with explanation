@@ -1,0 +1,138 @@
+import random  # Imports the random module, which allows you to generate random numbers or choices.
+from words import word_list  # Imports the list 'word_list' from a module called 'words', which contains a list of words to be used in the game.
+
+def get_word():  # Defines the function 'get_word' which selects a random word from the word_list.
+    word = random.choice(word_list)  # Randomly selects a word from the word_list.
+    return word.upper()  # Returns the randomly selected word in uppercase.
+
+def play(word):  # Defines the 'play' function that takes a word as input and starts the game.
+    word_completion = "_" * len(word)  # Initializes a string with underscores representing the unguessed word.
+    guessed = False  # Sets a flag to track if the word is guessed.
+    guessed_letters = []  # Initializes a list to store guessed letters.
+    guessed_words = []  # Initializes a list to store guessed words.
+    tries = 6  # Sets the number of tries the player has before losing.
+
+    print("Let's play Hangman!")  # Prints a welcome message for the game.
+    print(display_hangman(tries))  # Displays the initial hangman state.
+    print(word_completion)  # Prints the word with underscores.
+    print("\n")  # Adds an empty line for spacing.
+    
+    while not guessed and tries > 0:  # Loops until the word is guessed or the tries run out.
+        guess = input("Please guess a letter or word: ").upper()  # Prompts the player for a guess, converts it to uppercase.
+        
+        if len(guess) == 1 and guess.isalpha():  # If the guess is a single letter and it’s alphabetic.
+            if guess in guessed_letters:  # Checks if the letter has already been guessed.
+                print("You already guessed the letter", guess)  # Informs the player that the letter was already guessed.
+            elif guess not in word:  # If the guess is not in the word.
+                print(guess, "is not in the word.")  # Informs the player that the guess is incorrect.
+                tries -= 1  # Decreases the remaining tries by 1.
+                guessed_letters.append(guess)  # Adds the letter to the list of guessed letters.
+            else:  # If the guess is correct.
+                print("Good job,", guess, "is in the word!")  # Informs the player that the guess is correct.
+                guessed_letters.append(guess)  # Adds the correct letter to the guessed list.
+                word_as_list = list(word_completion)  # Converts the current word completion (underscores) to a list.
+                indices = [i for i, letter in enumerate(word) if letter == guess]  # Finds the indices where the guessed letter appears in the word.
+                for index in indices:  # Loops through each index where the guessed letter appears.
+                    word_as_list[index] = guess  # Replaces the corresponding underscore with the guessed letter.
+                word_completion = "".join(word_as_list)  # Joins the list back into a string.
+                if "_" not in word_completion:  # If there are no underscores left, the word is completely guessed.
+                    guessed = True  # Sets guessed to True to exit the loop.
+        elif len(guess) == len(word) and guess.isalpha():  # If the guess is the correct length and alphabetic.
+            if guess in guessed_words:  # Checks if the word has already been guessed.
+                print("You already guessed the word", guess)  # Informs the player the word was already guessed.
+            elif guess != word:  # If the guess is not the correct word.
+                print(guess, "is not the word.")  # Informs the player the word is incorrect.
+                tries -= 1  # Decreases tries by 1.
+                guessed_words.append(guess)  # Adds the guessed word to the list of guessed words.
+            else:  # If the guessed word is correct.
+                guessed = True  # Sets guessed to True to exit the loop.
+                word_completion = word  # Reveals the correct word.
+        else:  # If the guess is invalid (not a letter or word of the correct length).
+            print("Not a valid guess.")  # Informs the player their guess is not valid.
+        
+        print(display_hangman(tries))  # Displays the current state of the hangman based on remaining tries.
+        print(word_completion)  # Prints the current word completion.
+        print("\n")  # Adds a space between each round of guesses.
+
+    if guessed:  # If the word was guessed.
+        print("Congrats, you guessed the word! You win!")  # Prints a congratulatory message.
+    else:  # If the player ran out of tries.
+        print("Sorry, you ran out of tries. The word was " + word + ". Maybe next time!")  # Prints a message that the player lost.
+
+def display_hangman(tries):  # Defines a function to return a visual representation of the hangman based on the number of tries.
+    stages = [  # List of hangman stages, each stage corresponds to a decreasing number of tries.
+                """
+                   --------
+                   |      |
+                   |      O
+                   |     \\|/
+                   |      |
+                   |     / \\
+                   - 
+                """,  # Final state: fully drawn hangman.
+                """
+                   --------
+                   |      |
+                   |      O
+                   |     \\|/
+                   |      |
+                   |     / 
+                   - 
+                """,  # One leg missing.
+                """ 
+                   --------
+                   |      |
+                   |      O
+                   |     \\|/
+                   |      |
+                   |      
+                   - 
+                """,  # One leg and one arm missing.
+                """
+                   --------
+                   |      |
+                   |      O
+                   |     \\|
+                   |      |
+                   |     
+                   - 
+                """,  # One arm missing.
+                """
+                   --------
+                   |      |
+                   |      O
+                   |      |
+                   |      |
+                   |     
+                   - 
+                """,  # No arms.
+                """
+                   --------
+                   |      |
+                   |      O
+                   |    
+                   |      
+                   |     
+                   - 
+                """,  # Head only.
+                """
+                   --------
+                   |      |
+                   |      
+                   |    
+                   |      
+                   |     
+                   - 
+                """  # Initial state: empty.
+    ]
+    return stages[tries]  # Returns the corresponding hangman stage based on the number of tries left.
+
+def main():  # Defines the main function that starts the game.
+    word = get_word()  # Calls get_word to fetch a random word.
+    play(word)  # Starts the game by calling the play function with the chosen word.
+    while input("Play Again? (Y/N) ").upper() == "Y":  # Prompts the player to play again.
+        word = get_word()  # Fetches a new word.
+        play(word)  # Starts a new game with the new word.
+
+if __name__ == "__main__":  # Ensures that the main function is only called if the script is run directly.
+    main()  # Calls the main function to start the game.
